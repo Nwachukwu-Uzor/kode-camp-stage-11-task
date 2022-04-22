@@ -1,13 +1,27 @@
 const Product = require("../Models/ProductModel.js");
+const {
+  createSchema,
+  updateSchema,
+} = require("../Validation/ProductValidator.js");
 
 const createProduct = async (req, res) => {
   const { name, description, category, price } = req.body;
   try {
+    const { error } = createSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid value for property ${error.details[0].path}`,
+      });
+    }
+
     const existing = await Product.find({ name });
     if (existing !== null) {
-      return res
-        .status(400)
-        .json({ message: `A product exists with the name ${name}` });
+      return res.status(400).json({
+        success: false,
+        message: `A product exists with the name ${name}`,
+      });
     }
     const newProduct = await Product.create({
       name,
@@ -16,11 +30,13 @@ const createProduct = async (req, res) => {
       description,
       price,
     });
-    return res
-      .status(201)
-      .json({ message: "message created successfully", data: newProduct });
+    return res.status(201).json({
+      success: true,
+      message: "message created successfully",
+      data: newProduct,
+    });
   } catch (error) {
-    return res.status(400).json({ message: "Invalid message" });
+    return res.status(400).json({ success: false, message: "Invalid message" });
   }
 };
 
@@ -49,7 +65,15 @@ const updateProduct = async (req, res) => {
   const { product } = req.body;
 
   try {
-    await Message.findByIdAndUpdate(id, { product });
+    const { error } = updateSchema.validate(product);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid value for property ${error.details[0].path}`,
+      });
+    }
+    await Product.findByIdAndUpdate(id, { ...product });
     return res.status(200).json({ message: "update successful" });
   } catch (error) {
     return res.status(401).json({ message: "Invalid product Id" });
