@@ -11,7 +11,7 @@ Using express, I create a simple RestFul CRUD API for the model
 
 ---
 
-### Create products
+### Create a single product
 
 ```
 path: http://localhost:5000/api/product
@@ -42,7 +42,7 @@ response:
             }
 ```
 
-### Get all messages
+### Get all products
 
 ```
 path: http://localhost:5000/api/products
@@ -65,7 +65,7 @@ response:
             }
 ```
 
-### Get a single messages
+### Get a single product
 
 ```
 path: http://localhost:5000/api/products/:id
@@ -88,7 +88,7 @@ response:
             }
 ```
 
-### Update a message
+### Update a product
 
 ```
 path: http://localhost:5000/messages/:id
@@ -111,7 +111,7 @@ response:
             }
 ```
 
-### Delete a message
+### Delete a product
 
 ```
 path: http://localhost:5000/api/products/:id
