@@ -5,11 +5,13 @@ const {
   updateProduct,
   deleteProduct,
   createProduct,
+  getSearchForProduct,
 } = require("../Controllers/ProductsController.js");
 
 const ProductRouter = express.Router();
 
 ProductRouter.get("/", getAllProducts);
+ProductRouter.get("/search", getSearchForProduct);
 ProductRouter.get("/:id", getSingleProduct);
 ProductRouter.post("/", createProduct);
 ProductRouter.patch("/:id", updateProduct);

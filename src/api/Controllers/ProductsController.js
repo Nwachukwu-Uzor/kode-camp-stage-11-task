@@ -1,9 +1,11 @@
 const Product = require("../Models/ProductModel.js");
+
 const {
   createSchema,
   updateSchema,
 } = require("../Validation/ProductValidator.js");
 
+// CREATE A PRODUCT
 const createProduct = async (req, res) => {
   const { name, description, category, price } = req.body;
   try {
@@ -16,7 +18,7 @@ const createProduct = async (req, res) => {
       });
     }
 
-    const existing = await Product.find({ name });
+    const existing = await Product.findOne({ name });
     if (existing !== null) {
       return res.status(400).json({
         success: false,
@@ -40,8 +42,9 @@ const createProduct = async (req, res) => {
   }
 };
 
+// GET ALL PRODUCTS
 const getAllProducts = async (req, res) => {
-  const products = await Product.find();
+  const products = await Product.find().sort({ price: 1 });
   try {
     return res.status(200).json({ data: products });
   } catch {
@@ -49,20 +52,61 @@ const getAllProducts = async (req, res) => {
   }
 };
 
+// GET ALL PRODUCTS IN A CATEGORY
+const getSearchForProduct = async (req, res) => {
+  const { category: searchCategory, name: searchName } = req.query;
+
+  try {
+    const query = {};
+    if (searchCategory) {
+      query.category = { $eq: searchCategory };
+    }
+
+    if (searchName) {
+      query.name = { $eq: searchName };
+    }
+
+    const products = await Product.find(query).sort({ price: 1 });
+
+    if (!products.length) {
+      return res.status(404).json({
+        success: false,
+        message: `No product found for the search criteria`,
+      });
+    }
+
+    return res.status(200).json({ success: true, data: products });
+  } catch (error) {
+    return res
+      .status(404)
+      .json({ success: false, message: `Error occured ${error.message}` });
+  }
+};
+
+// GET A SINGLE PRODUCT
 const getSingleProduct = async (req, res) => {
   const { id } = req.params;
 
   try {
     const product = await Product.findById(id);
-    return res.status(200).json({ data: product });
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No product found" });
+    }
+
+    return res.status(200).json({ data: product, success: true });
   } catch (error) {
     return res.status(404).json({ message: "Error invalid product id" });
   }
 };
 
+// UPDATE A PRODUCT
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { product } = req.body;
+
+  const product = req.body;
 
   try {
     const { error } = updateSchema.validate(product);
@@ -73,13 +117,28 @@ const updateProduct = async (req, res) => {
         message: `Invalid value for property ${error.details[0].path}`,
       });
     }
-    await Product.findByIdAndUpdate(id, { ...product });
-    return res.status(200).json({ message: "update successful" });
+
+    const prod = await Product.findByIdAndUpdate(id, product, {
+      new: true,
+    });
+
+    if (!prod) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product no found!" });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "update successful", data: prod });
   } catch (error) {
-    return res.status(401).json({ message: "Invalid product Id" });
+    return res
+      .status(401)
+      .json({ message: `An error occured ${error.message}` });
   }
 };
 
+// DELETE A SINGLE PRODUCT
 const deleteProduct = async (req, res) => {
   const { id } = req.params;
 
@@ -95,6 +154,7 @@ module.exports = {
   createProduct,
   getAllProducts,
   getSingleProduct,
+  getSearchForProduct,
   updateProduct,
   deleteProduct,
 };

@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 
 const ProductRouter = require("./src/api/Routers/ProductRouter.js");
 const database = require("./src/config/database.js");
+const userRouter = require("./src/api/Routers/UserRoute.js");
 
 dotenv.config();
 
@@ -18,3 +19,4 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/products", ProductRouter);
+app.use("/api/accounts", userRouter);
