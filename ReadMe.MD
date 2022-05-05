@@ -11,6 +11,9 @@ Using express, I create a simple RestFul CRUD API for the model
 
 ---
 
+## Products
+
+<br />
 ### Create a single product
 
 ```
@@ -88,11 +91,49 @@ response:
             }
 ```
 
+### Search for product by name or category
+
+```
+path: http://localhost:5000/api/products/search?query
+method: GET
+query:
+    {
+        category: "product category",
+        name: "product name"
+    }
+
+response:
+
+    success:
+        status: 200
+        json:
+            {
+                data: [products matching query],
+                success: true
+            }
+
+    error:
+        status: 404,
+        json:
+            {
+                message: "No Product Found",
+                success: false
+            }
+```
+
 ### Update a product
 
 ```
 path: http://localhost:5000/messages/:id
 method: PATCH
+
+Json Payload:
+    {
+        // optionally add fields
+        name: "product name",
+        description: "product description",
+        price: "product price"
+    }
 
 response:
 
@@ -132,4 +173,119 @@ response:
             {
                 "message": "Invalid product Id"
             }
+```
+
+## Users
+
+### Create an Account
+
+```
+path: http://localhost:5000/api/accounts/signup
+method: POST
+
+Json Payload:
+    {
+        "firstName": "user's first name",
+        "lastName": "user's last name",
+        "email" "user's email",
+        "password": "user's password"
+    }
+
+response:
+    success:
+        {
+            status: 201,
+            success: true,
+            data: {
+                firstName: "user's first name",
+                Id: "Database generated user id",
+                lastName: "user's last name",
+                email: "user's email"
+            }
+        }
+    failure:
+        {
+            status: 400
+            success: false,
+            message: "Error message"
+        }
+```
+
+### Get All Users
+
+```
+path: http://localhost:5000/api/accounts/users
+method: GET
+
+response:
+    success: {
+        status: 200,
+        success: true,
+        data: [all users]
+    }
+    failure: {
+        status: 404,
+        success: false,
+    }
+```
+
+### Get a user by Id
+
+```
+path: http://localhost:5000/api/accounts/users/:id
+method: GET
+
+response:
+    success: {
+        status: 200,
+        success: true,
+        data: [user data]
+    }
+    failure: {
+        success: false,
+    }
+```
+
+### Update User password
+
+```
+path: http://localhost:5000/api/accounts/users/:id/password-update
+
+method: PATCH
+
+Json payload:
+    {
+        password: "new user password"
+    }
+
+response:
+    success: {
+        status: 204
+    }
+    error: {
+        status: 404,
+        success: false
+    }
+```
+
+### Update User Details
+
+```
+path: http://localhost:5000/api/accounts/users/:id/update-user-details
+
+method: PATCH
+
+Json payload:
+    {
+        // optionally supply all user account fields except email and password
+    }
+
+response:
+    success: {
+        status: 204
+    }
+    error: {
+        status: 404,
+        success: false
+    }
 ```

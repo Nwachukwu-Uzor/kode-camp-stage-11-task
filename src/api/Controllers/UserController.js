@@ -129,7 +129,34 @@ const updateUserDetails = async (req, res) => {
     });
 
     return res.status(200).json({ success: true, data: updatedUser });
-  } catch (error) {}
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: `An error occured ${error.message}` });
+  }
+};
+
+// DELETE USER
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await UserModel.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "No user found with the provided credentials",
+      });
+    }
+
+    await UserModel.findByIdAndDelete(id);
+    return res.status(204).json();
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: `An error occured ${error.message}` });
+  }
 };
 
 module.exports = {
@@ -138,4 +165,5 @@ module.exports = {
   getUserById,
   updateUserPassword,
   updateUserDetails,
+  deleteUser,
 };

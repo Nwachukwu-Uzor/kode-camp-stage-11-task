@@ -4,6 +4,7 @@ const {
   getUserById,
   updateUserPassword,
   updateUserDetails,
+  deleteUser,
 } = require("../Controllers/UserController.js");
 
 const express = require("express");
@@ -15,5 +16,6 @@ userRouter.get("/users", getAllUsers);
 userRouter.get("/users/:id", getUserById);
 userRouter.patch("/users/:id/password-update", updateUserPassword);
 userRouter.patch("/users/:id/update-user-details", updateUserDetails);
+userRouter.delete("/users/:id", deleteUser);
 
 module.exports = userRouter;
