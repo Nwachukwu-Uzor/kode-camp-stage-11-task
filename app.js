@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 import ProductRouter from "./src/api/Routers/ProductRouter.js";
 import database from "./src/config/database.js";
@@ -13,6 +14,8 @@ database(app);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Reached the home route" });

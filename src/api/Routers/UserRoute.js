@@ -3,6 +3,7 @@ import {
   getAllUsers,
   getUserById,
   loginUser,
+  logout,
   updateUserPassword,
   updateUserDetails,
   deleteUser,
@@ -14,6 +15,7 @@ const userRouter = express.Router();
 
 userRouter.post("/signup", createUserAction);
 userRouter.post("/signin", loginUser);
+userRouter.get("/logout", logout);
 userRouter.get("/users", getAllUsers);
 userRouter.get("/users/:id", getUserById);
 userRouter.patch("/users/:id/password-update", updateUserPassword);

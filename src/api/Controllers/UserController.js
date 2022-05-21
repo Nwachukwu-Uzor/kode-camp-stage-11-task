@@ -1,5 +1,6 @@
 import UserModel from "../Models/UserModel.js";
 import { userCreateSchema } from "../Validation/UserValidation.js";
+import jwt from "jsonwebtoken";
 
 import bcrypt from "bcrypt";
 
@@ -60,16 +61,14 @@ export const getUserById = async (req, res) => {
   try {
     const user = await UserModel.findById(id);
 
-    if (!user) {
+    if (user == null) {
       return res.status(404).json({
         success: false,
         message: "No user found with the provided credentials",
       });
     }
 
-    const { password, ...userToReturn } = user._doc;
-
-    return res.status(200).json({ success: true, data: userToReturn });
+    return res.status(200).json({ success: true, data: user });
   } catch (error) {
     return res
       .status(400)
@@ -100,11 +99,33 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    return res.status(200).json({ success: true, data: user });
+    const token = jwt.sign({ id: user._id }, process.env.USER_JWT_SECRET);
+
+    return res.cookie("auth_token", token).status(200).json({
+      success: true,
+      message: "sign in success",
+      token,
+    });
   } catch (error) {
-    return res
-      .status(400)
-      .json({ success: false, message: `Error occured ${error.message}` });
+    return res.status(400).json({
+      success: false,
+      message: `Error occured ${error.message}`,
+    });
+  }
+};
+
+// LOGOUT USER
+export const logout = async (req, res) => {
+  try {
+    return res.clearCookie("auth_token").status(200).json({
+      success: true,
+      message: "logout success",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: `Error occured ${error.message}`,
+    });
   }
 };
 

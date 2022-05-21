@@ -8,12 +8,14 @@ import {
   getSearchForProduct,
 } from "../Controllers/ProductsController.js";
 
+import authorize from "../Middleware/authorize.js";
+
 const ProductRouter = express.Router();
 
-ProductRouter.get("/", getAllProducts);
+ProductRouter.get("/", authorize, getAllProducts);
 ProductRouter.get("/search", getSearchForProduct);
 ProductRouter.get("/:id", getSingleProduct);
-ProductRouter.post("/", createProduct);
+ProductRouter.post("/", authorize, createProduct);
 ProductRouter.patch("/:id", updateProduct);
 ProductRouter.delete("/:id", deleteProduct);
 

@@ -28,6 +28,7 @@ export const createProduct = async (req, res) => {
       category,
       description,
       price,
+      user: req.user._id,
     });
     return res.status(201).json({
       success: true,
@@ -43,6 +44,7 @@ export const createProduct = async (req, res) => {
 export const getAllProducts = async (req, res) => {
   const products = await Product.find().sort({ price: 1 });
   try {
+    console.log(req.user);
     return res.status(200).json({ data: products });
   } catch {
     return res.status(404).json({ message: "Not found" });
