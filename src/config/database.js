@@ -1,5 +1,7 @@
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+
+dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
@@ -14,4 +16,4 @@ const database = async (app) => {
   }
 };
 
-module.exports = database;
+export default database;

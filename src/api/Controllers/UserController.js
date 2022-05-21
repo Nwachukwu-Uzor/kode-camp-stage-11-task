@@ -1,41 +1,42 @@
-const UserModel = require("../Models/UserModel.js");
-const { userCreateSchema } = require("../Validation/UserValidation.js");
+import UserModel from "../Models/UserModel.js";
+import { userCreateSchema } from "../Validation/UserValidation.js";
 
-const bcrypt = require("bcrypt");
+import bcrypt from "bcrypt";
 
 // CREATE A USER
-const createUserAction = async (req, res) => {
+export const createUserAction = async (req, res) => {
+  const { firstName, lastName, password: newUserPassword, email } = req.body;
   try {
     const { error } = userCreateSchema.validate(req.body);
-    const { firstName, lastName, password, email: userEmail } = req.body;
 
     if (error) {
       return res.status(400).json({
         success: false,
-        message: `Invalid value for property ${error.details[0].path}`,
+        message: `Invalid value for property ${error.details[0].message}`,
       });
     }
 
-    const existingUser = await UserModel.findOne({ email: userEmail });
+    const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: `User exist with the email ${userEmail}`,
+        message: `User exist with the email ${email}`,
       });
     }
 
     const salt = await bcrypt.genSalt(12);
-    const hash = await bcrypt.hash(password, salt);
+    const hash = await bcrypt.hash(newUserPassword, salt);
 
     const newUser = await UserModel.create({
       firstName,
       lastName,
-      email: userEmail,
+      email,
       password: hash,
     });
 
-    return res.status(201).json({ success: true, data: newUser });
+    const { password, _v, ...others } = newUser._doc;
+    return res.status(201).json({ success: true, data: others });
   } catch (error) {
     return res
       .status(400)
@@ -44,7 +45,7 @@ const createUserAction = async (req, res) => {
 };
 
 // GET ALL USER
-const getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
     const users = await UserModel.find({}, { password: 0, __v: 0 });
     return res.status(200).json({ success: true, data: users });
@@ -54,7 +55,7 @@ const getAllUsers = async (req, res) => {
 };
 
 // GET A SINGLE USER BY ID
-const getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
   const { id } = req.params;
   try {
     const user = await UserModel.findById(id);
@@ -76,8 +77,39 @@ const getUserById = async (req, res) => {
   }
 };
 
+// LOGIN USER
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await UserModel.findOne({ email }).select("+password");
+
+    if (user == null) {
+      return res.status(404).json({
+        success: false,
+        message: "No user found with the provided credentials",
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(404).json({
+        success: false,
+        message: "Incorrect password",
+      });
+    }
+
+    return res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ success: false, message: `Error occured ${error.message}` });
+  }
+};
+
 // UPDATE A USER'S PASSWORD
-const updateUserPassword = async (req, res) => {
+export const updateUserPassword = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -105,7 +137,7 @@ const updateUserPassword = async (req, res) => {
 };
 
 // UPDATE USER DETAILS EXCEPT PASSWORD AND EMAIL
-const updateUserDetails = async (req, res) => {
+export const updateUserDetails = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -137,7 +169,7 @@ const updateUserDetails = async (req, res) => {
 };
 
 // DELETE USER
-const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -157,13 +189,4 @@ const deleteUser = async (req, res) => {
       .status(400)
       .json({ success: false, message: `An error occured ${error.message}` });
   }
-};
-
-module.exports = {
-  createUserAction,
-  getAllUsers,
-  getUserById,
-  updateUserPassword,
-  updateUserDetails,
-  deleteUser,
 };

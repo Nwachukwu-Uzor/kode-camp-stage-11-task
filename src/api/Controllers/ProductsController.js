@@ -1,12 +1,9 @@
-const Product = require("../Models/ProductModel.js");
+import Product from "../Models/ProductModel.js";
 
-const {
-  createSchema,
-  updateSchema,
-} = require("../Validation/ProductValidator.js");
+import { createSchema, updateSchema } from "../Validation/ProductValidator.js";
 
 // CREATE A PRODUCT
-const createProduct = async (req, res) => {
+export const createProduct = async (req, res) => {
   const { name, description, category, price } = req.body;
   try {
     const { error } = createSchema.validate(req.body);
@@ -43,7 +40,7 @@ const createProduct = async (req, res) => {
 };
 
 // GET ALL PRODUCTS
-const getAllProducts = async (req, res) => {
+export const getAllProducts = async (req, res) => {
   const products = await Product.find().sort({ price: 1 });
   try {
     return res.status(200).json({ data: products });
@@ -53,7 +50,7 @@ const getAllProducts = async (req, res) => {
 };
 
 // GET ALL PRODUCTS IN A CATEGORY
-const getSearchForProduct = async (req, res) => {
+export const getSearchForProduct = async (req, res) => {
   const { category: searchCategory, name: searchName } = req.query;
 
   try {
@@ -84,7 +81,7 @@ const getSearchForProduct = async (req, res) => {
 };
 
 // GET A SINGLE PRODUCT
-const getSingleProduct = async (req, res) => {
+export const getSingleProduct = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -103,7 +100,7 @@ const getSingleProduct = async (req, res) => {
 };
 
 // UPDATE A PRODUCT
-const updateProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
   const { id } = req.params;
 
   const product = req.body;
@@ -139,7 +136,7 @@ const updateProduct = async (req, res) => {
 };
 
 // DELETE A SINGLE PRODUCT
-const deleteProduct = async (req, res) => {
+export const deleteProduct = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -148,13 +145,4 @@ const deleteProduct = async (req, res) => {
   } catch (error) {
     res.status(401).json({ message: "Invalid Id" });
   }
-};
-
-module.exports = {
-  createProduct,
-  getAllProducts,
-  getSingleProduct,
-  getSearchForProduct,
-  updateProduct,
-  deleteProduct,
 };

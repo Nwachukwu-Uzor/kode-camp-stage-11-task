@@ -1,21 +1,23 @@
-const {
+import {
   createUserAction,
   getAllUsers,
   getUserById,
+  loginUser,
   updateUserPassword,
   updateUserDetails,
   deleteUser,
-} = require("../Controllers/UserController.js");
+} from "../Controllers/UserController.js";
 
-const express = require("express");
+import express from "express";
 
 const userRouter = express.Router();
 
 userRouter.post("/signup", createUserAction);
+userRouter.post("/signin", loginUser);
 userRouter.get("/users", getAllUsers);
 userRouter.get("/users/:id", getUserById);
 userRouter.patch("/users/:id/password-update", updateUserPassword);
 userRouter.patch("/users/:id/update-user-details", updateUserDetails);
 userRouter.delete("/users/:id", deleteUser);
 
-module.exports = userRouter;
+export default userRouter;

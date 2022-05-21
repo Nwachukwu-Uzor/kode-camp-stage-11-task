@@ -1,9 +1,9 @@
-const express = require("express");
-const dotenv = require("dotenv");
+import express from "express";
+import dotenv from "dotenv";
 
-const ProductRouter = require("./src/api/Routers/ProductRouter.js");
-const database = require("./src/config/database.js");
-const userRouter = require("./src/api/Routers/UserRoute.js");
+import ProductRouter from "./src/api/Routers/ProductRouter.js";
+import database from "./src/config/database.js";
+import userRouter from "./src/api/Routers/UserRoute.js";
 
 dotenv.config();
 

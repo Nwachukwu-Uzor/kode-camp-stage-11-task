@@ -1,14 +1,23 @@
-const Joi = require("joi");
+import Joi from "joi";
+import JoiPasswordComplexity from "joi-password-complexity";
 
-const userCreateSchema = Joi.object({
-  firstName: Joi.string().min(2).max(30).required(),
-  lastName: Joi.string().min(2).max(30).required(),
+const complexityOption = {
+  min: 8,
+  max: 50,
+  lowerCase: 1,
+  upperCase: 1,
+  numeric: 1,
+  symbol: 1,
+  requirementCount: 4,
+};
+
+export const userCreateSchema = Joi.object({
+  firstName: Joi.string().min(2).max(50).required(),
+  lastName: Joi.string().min(2).max(50).required(),
   email: Joi.string()
     .min(7)
+    .max(255)
     .email({ tlds: { allow: false } }),
-  password: Joi.string().min(7),
+  password: JoiPasswordComplexity(complexityOption).required(),
+  confirmPassword: Joi.string().required().valid(Joi.ref("password")),
 });
-
-module.exports = {
-  userCreateSchema,
-};
