@@ -1,4 +1,4 @@
-import UserModel from "../Models/UserModel.js";
+import UserModel from "../Models/users.model.js";
 import { userCreateSchema } from "../Validation/UserValidation.js";
 import jwt from "jsonwebtoken";
 
@@ -6,7 +6,13 @@ import bcrypt from "bcrypt";
 
 // CREATE A USER
 export const createUserAction = async (req, res) => {
-  const { firstName, lastName, password: newUserPassword, email } = req.body;
+  const {
+    firstName,
+    lastName,
+    password: newUserPassword,
+    email,
+    role,
+  } = req.body;
   try {
     const { error } = userCreateSchema.validate(req.body);
 
@@ -34,10 +40,10 @@ export const createUserAction = async (req, res) => {
       lastName,
       email,
       password: hash,
+      role,
     });
 
-    const { password, _v, ...others } = newUser._doc;
-    return res.status(201).json({ success: true, data: others });
+    return res.status(201).json({ success: true, data: newUser });
   } catch (error) {
     return res
       .status(400)
@@ -99,7 +105,11 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.USER_JWT_SECRET);
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.USER_JWT_SECRET,
+      { expiresIn: "15m" }
+    );
 
     return res.cookie("auth_token", token).status(200).json({
       success: true,

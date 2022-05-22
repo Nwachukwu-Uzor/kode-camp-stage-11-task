@@ -19,6 +19,11 @@ const userModel = new mongoose.Schema(
       required: true,
       select: false,
     },
+    role: {
+      type: String,
+      default: "User",
+      enum: ["SuperAdmin", "Admin", "User"],
+    },
     isActive: {
       type: Boolean,
       default: true,

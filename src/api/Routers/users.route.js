@@ -7,7 +7,7 @@ import {
   updateUserPassword,
   updateUserDetails,
   deleteUser,
-} from "../Controllers/UserController.js";
+} from "../Controllers/users.controller.js";
 
 import express from "express";
 

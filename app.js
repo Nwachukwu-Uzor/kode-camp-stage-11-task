@@ -2,9 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
-import ProductRouter from "./src/api/Routers/ProductRouter.js";
+import ProductRouter from "./src/api/Routers/products.route.js";
 import database from "./src/config/database.js";
-import userRouter from "./src/api/Routers/UserRoute.js";
+import userRouter from "./src/api/Routers/users.route.js";
 
 dotenv.config();
 

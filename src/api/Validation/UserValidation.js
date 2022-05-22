@@ -20,4 +20,5 @@ export const userCreateSchema = Joi.object({
     .email({ tlds: { allow: false } }),
   password: JoiPasswordComplexity(complexityOption).required(),
   confirmPassword: Joi.string().required().valid(Joi.ref("password")),
+  role: Joi.string().min(4).max(10),
 });

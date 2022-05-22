@@ -6,7 +6,7 @@ import {
   deleteProduct,
   createProduct,
   getSearchForProduct,
-} from "../Controllers/ProductsController.js";
+} from "../Controllers/products.controller.js";
 
 import authorize from "../Middleware/authorize.js";
 
