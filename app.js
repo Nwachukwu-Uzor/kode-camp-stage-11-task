@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import ProductRouter from "./src/api/Routers/products.route.js";
 import database from "./src/config/database.js";
 import userRouter from "./src/api/Routers/users.route.js";
+import refreshToken from "./src/api/Routers/refreshToken.route.js";
 
 dotenv.config();
 
@@ -23,3 +24,4 @@ app.get("/", (req, res) => {
 
 app.use("/api/products", ProductRouter);
 app.use("/api/accounts", userRouter);
+app.use("/api/token", refreshToken);

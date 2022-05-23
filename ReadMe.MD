@@ -289,3 +289,64 @@ response:
         success: false
     }
 ```
+
+### Login
+
+```
+path: http://localhost:5000/api/accounts/signin
+
+method: POST
+
+Json payload:
+    {
+        email: "user email",
+        password: "user password"
+    }
+
+response
+    sucess:
+        {
+            status: 200,
+            success: true,
+            data: {
+                token: Bearer tokenGenerated,
+                refreshToken: refreshTokenGenerated
+            }
+        }
+    failure:
+        {
+            status: 404,
+            success: false,
+            message: error message
+        }
+
+```
+
+### Generate refresh token
+
+```
+path: http://localhost:5000/api/token/refreshToken
+
+method: POST
+
+Json payload:
+    {
+        refreshToken: "refresh token"
+    }
+response:
+    sucess:
+        {
+            status: 200,
+            success: true,
+            data: {
+                token: Bearer tokenGenerated,
+                refreshToken: refreshTokenGenerated
+            }
+        }
+    failure:
+        {
+            status: 403,
+            success: false,
+            message: error message
+        }
+```

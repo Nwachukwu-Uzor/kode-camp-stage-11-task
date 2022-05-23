@@ -11,11 +11,17 @@ export default async (req, res, next) => {
       });
     }
 
-    const verified = jwt.verify(token, process.env.USER_JWT_SECRET);
-
-    req.user = verified;
-
-    next();
+    jwt.verify(token, process.env.USER_JWT_SECRET, (err, user) => {
+      if (!err) {
+        req.user = user;
+        next();
+      } else {
+        return res.status(401).json({
+          success: false,
+          message: "You are not authorized to access this route",
+        });
+      }
+    });
   } catch (error) {
     return res.status(401).json({
       success: false,

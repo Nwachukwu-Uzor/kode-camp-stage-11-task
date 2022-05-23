@@ -1,4 +1,5 @@
 import UserModel from "../Models/users.model.js";
+import TokenModel from "../Models/refreshToken.model.js";
 import { userCreateSchema } from "../Validation/UserValidation.js";
 import jwt from "jsonwebtoken";
 
@@ -106,27 +107,44 @@ export const loginUser = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { Id: user._id, role: user.role },
       process.env.USER_JWT_SECRET,
       { expiresIn: "15m" }
     );
 
-    const refreshToken = jwt.sign({}, process.env.USER_REFRESH_TOKEN_SECRET, {
-      expiresIn: "1d",
+    const refreshToken = jwt.sign(
+      { Id: user._id, role: user.role, token: token },
+      process.env.USER_REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
+
+    const userToken = await TokenModel.findOne({ userId: user._id });
+
+    if (userToken) {
+      await userToken.remove();
+    }
+
+    await TokenModel.create({
+      userId: user._id,
+      token: refreshToken,
     });
 
+    const tokenOptions = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000,
+    };
+
     return res
-      .cookie("refresh_token", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        maxAge: 24 * 60 * 60 * 1000,
-      })
+      .cookie("refresh_token", refreshToken, tokenOptions)
       .status(200)
       .json({
         success: true,
         message: "sign in success",
-        token: `Bearer ${token}`,
+        data: { token: `Bearer ${token}`, refreshToken },
       });
   } catch (error) {
     return res.status(400).json({
