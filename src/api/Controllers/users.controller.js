@@ -111,11 +111,23 @@ export const loginUser = async (req, res) => {
       { expiresIn: "15m" }
     );
 
-    return res.cookie("auth_token", token).status(200).json({
-      success: true,
-      message: "sign in success",
-      token,
+    const refreshToken = jwt.sign({}, process.env.USER_REFRESH_TOKEN_SECRET, {
+      expiresIn: "1d",
     });
+
+    return res
+      .cookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .status(200)
+      .json({
+        success: true,
+        message: "sign in success",
+        token: `Bearer ${token}`,
+      });
   } catch (error) {
     return res.status(400).json({
       success: false,

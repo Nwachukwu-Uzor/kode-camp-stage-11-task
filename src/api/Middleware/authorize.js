@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 export default async (req, res, next) => {
   try {
-    const token = req.cookies.auth_token;
+    const token = req.headers.token.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({
@@ -12,8 +12,6 @@ export default async (req, res, next) => {
     }
 
     const verified = jwt.verify(token, process.env.USER_JWT_SECRET);
-
-    console.log(verified);
 
     req.user = verified;
 
